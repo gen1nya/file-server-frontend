@@ -1,6 +1,27 @@
 import { useEffect, useState } from 'react';
 import { fetchMe } from '../services/authService';
-import {getFileDownloadUrl, getFiles} from "../services/filesService";
+import { getFileDownloadUrl, getFiles } from '../services/filesService';
+import styled from 'styled-components';
+import { Button } from '../components/Button';
+
+const Wrapper = styled.div`
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: ${({ theme }) => theme.colors.surface};
+    border-radius: 8px;
+`;
+
+const FilesList = styled.ul`
+    list-style: none;
+    padding: 0;
+`;
+
+const FileItem = styled.li`
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+`;
 
 export const DashboardPage = () => {
     const [user, setUser] = useState<any>(null);
@@ -58,19 +79,19 @@ export const DashboardPage = () => {
 
 
     return (
-        <div>
+        <Wrapper>
             Добро пожаловать в файловый менеджер{user ? `, ${user.email}` : ''}
             <h2>Ваши файлы:</h2>
-            <ul>
+            <FilesList>
                 {files.map((file) => (
-                    <li key={file.fileId}>
-                        {file.name}{' '}
-                        <button onClick={() => downloadFile(file.fileId, file.name)}>
+                    <FileItem key={file.fileId}>
+                        {file.name}
+                        <Button onClick={() => downloadFile(file.fileId, file.name)}>
                             Скачать
-                        </button>
-                    </li>
+                        </Button>
+                    </FileItem>
                 ))}
-            </ul>
-        </div>
+            </FilesList>
+        </Wrapper>
     );
 };

@@ -10,7 +10,6 @@ export const AuthInitPage = () => {
         const init = async () => {
             const access = getAccessToken();
             const refresh = getRefreshToken();
-
             if (!access && !refresh) {
                 navigate('/login');
                 return;
@@ -19,7 +18,7 @@ export const AuthInitPage = () => {
             try {
                 await fetchMe();
                 navigate('/dashboard');
-            } catch {
+            } catch (e) {
                 clearTokens();
                 navigate('/login');
             }

@@ -12,7 +12,6 @@ export const login = async (email: string, password: string) => {
     }
 
     const { accessToken, refreshToken } = await response.json();
-    console.log('login', accessToken, refreshToken);
     return { accessToken, refreshToken };
 };
 

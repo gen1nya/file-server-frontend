@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAccessToken, getRefreshToken, clearTokens } from '../utils/tokenStorage';
-import { fetchMe, refreshToken } from '../services/authService';
+import { fetchMe } from '../services/authService';
 
 export const AuthInitPage = () => {
     const navigate = useNavigate();
@@ -19,15 +19,9 @@ export const AuthInitPage = () => {
             try {
                 await fetchMe();
                 navigate('/dashboard');
-            } catch (err) {
-                try {
-                    await refreshToken();
-                    await fetchMe();
-                    navigate('/dashboard');
-                } catch {
-                    clearTokens();
-                    navigate('/login');
-                }
+            } catch {
+                clearTokens();
+                navigate('/login');
             }
         };
 

@@ -7,7 +7,6 @@ const refreshTokens = async () => {
     const res = await fetch('/auth/refresh', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
         }
     });

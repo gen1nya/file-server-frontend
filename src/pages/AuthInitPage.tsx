@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAccessToken, getRefreshToken, saveTokens, clearTokens } from '../utils/tokenStorage';
-import {fetchMe} from "../services/authService";
+import { getAccessToken, getRefreshToken, clearTokens } from '../utils/tokenStorage';
+import { fetchMe, refreshToken } from '../services/authService';
 
 export const AuthInitPage = () => {
     const navigate = useNavigate();
@@ -17,45 +17,17 @@ export const AuthInitPage = () => {
             }
 
             try {
-                if (access) {
-                    const meRes = await fetch('/me', {
-                        headers: { Authorization: `Bearer ${access}` }
-                    });
-
-                    if (meRes.ok) {
-                        navigate('/dashboard');
-                        return;
-                    }
-                }
-
-                if (refresh) {
-                    const refreshRes = await fetch('/auth/refresh', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${refresh}`
-                        }
-                    });
-
-                    if (!refreshRes.ok) throw new Error('Refresh failed');
-
-                    const { accessToken, refreshToken } = await refreshRes.json();
-                    saveTokens(accessToken, refreshToken);
-
-                    const meRes = await fetch('/me', {
-                        headers: { Authorization: `Bearer ${accessToken}` }
-                    });
-
-                    if (meRes.ok) {
-                        navigate('/dashboard');
-                        return;
-                    }
-                }
-
-                throw new Error('Auth failed');
+                await fetchMe();
+                navigate('/dashboard');
             } catch (err) {
-                clearTokens();
-                navigate('/login');
+                try {
+                    await refreshToken();
+                    await fetchMe();
+                    navigate('/dashboard');
+                } catch {
+                    clearTokens();
+                    navigate('/login');
+                }
             }
         };
 

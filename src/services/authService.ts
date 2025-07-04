@@ -1,4 +1,4 @@
-import { getAccessToken, getRefreshToken, saveTokens, clearTokens } from '../utils/tokenStorage';
+import { apiFetch, refreshTokens } from './apiClient';
 
 export const login = async (email: string, password: string) => {
     const response = await fetch('/auth/login', {
@@ -17,29 +17,12 @@ export const login = async (email: string, password: string) => {
 };
 
 export const fetchMe = async () => {
-    const res = await fetch('/me', {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${getAccessToken()}` }
-    });
+    const res = await apiFetch('/me', { method: 'GET' });
     if (!res.ok) throw new Error('Not authenticated');
     return res.json();
 };
 
 export const refreshToken = async () => {
-    const token = getRefreshToken();
-    if (!token) throw new Error('No refresh token');
-
-    const res = await fetch('/auth/refresh', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-        }
-    });
-
-    if (!res.ok) throw new Error('Unable to refresh');
-
-    const { accessToken, refreshToken } = await res.json();
-    saveTokens(accessToken, refreshToken);
+    await refreshTokens();
     return true;
 };
